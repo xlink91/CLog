@@ -16,11 +16,26 @@ namespace CLogManagement.Web.Api.Controllers
             Information = information;
         }
 
-        [Route("initializer")]
+        [Route("initializerWin")]
         [HttpPost]
-        public IHttpActionResult WriteToInitializerLog(LogRecordWebModel request)
+        public IHttpActionResult WriteToInitializerWinLog(LogRecordWebModel request)
+       {
+            request.ServiceName = "InitializerWin";
+            using (var database = new LiteDatabase(Information.DatabaseFile))
+            {
+                var collection = database.GetCollection<LogRecordWebModel>("Logs");
+
+                collection.Insert(request);
+            }
+
+            return Ok();
+        }
+
+        [Route("initializerWeb")]
+        [HttpPost]
+        public IHttpActionResult WriteToInitializerWebLog(LogRecordWebModel request)
         {
-            request.ServiceName = "Initializer";
+            request.ServiceName = "InitializerWeb";
             using (var database = new LiteDatabase(Information.DatabaseFile))
             {
                 var collection = database.GetCollection<LogRecordWebModel>("Logs");
@@ -61,11 +76,25 @@ namespace CLogManagement.Web.Api.Controllers
             return Ok();
         }
 
-        [Route("internalcheck")]
+        [Route("internalcheckWeb")]
         [HttpPost]
-        public IHttpActionResult WriteToInternalCheckLog(LogRecordWebModel request)
+        public IHttpActionResult WriteToInternalCheckWebLog(LogRecordWebModel request)
         {
-            request.ServiceName = "InternalCheck";
+            request.ServiceName = "InternalCheckWeb";
+            using (var database = new LiteDatabase(Information.DatabaseFile))
+            {
+                var collection = database.GetCollection<LogRecordWebModel>("Logs");
+
+                collection.Insert(request);
+            }
+
+            return Ok();
+        }
+        [Route("internalcheckWin")]
+        [HttpPost]
+        public IHttpActionResult WriteToInternalCheckWinLog(LogRecordWebModel request)
+        {
+            request.ServiceName = "InternalCheckWin";
             using (var database = new LiteDatabase(Information.DatabaseFile))
             {
                 var collection = database.GetCollection<LogRecordWebModel>("Logs");
@@ -76,11 +105,25 @@ namespace CLogManagement.Web.Api.Controllers
             return Ok();
         }
 
-        [Route("distribution")]
+        [Route("distributionWin")]
         [HttpPost]
-        public IHttpActionResult WriteToDistributionLog(LogRecordWebModel request)
+        public IHttpActionResult WriteToDistributionWinLog(LogRecordWebModel request)
         {
-            request.ServiceName = "Distribution";
+            request.ServiceName = "DistributionWin";
+            using (var database = new LiteDatabase(Information.DatabaseFile))
+            {
+                var collection = database.GetCollection<LogRecordWebModel>("Logs");
+
+                collection.Insert(request);
+            }
+
+            return Ok();
+        }
+        [Route("distributionWeb")]
+        [HttpPost]
+        public IHttpActionResult WriteToDistributionWebLog(LogRecordWebModel request)
+        {
+            request.ServiceName = "DistributionWeb";
             using (var database = new LiteDatabase(Information.DatabaseFile))
             {
                 var collection = database.GetCollection<LogRecordWebModel>("Logs");

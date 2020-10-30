@@ -2,11 +2,11 @@
 {
     public class CfgInformation
     {
-        public CfgInformation(string databaseFile)
+        public CfgInformation(string connectionString)
         {
-            DatabaseFile = databaseFile;
+            ConnectionString = connectionString;
         }
 
-        public string DatabaseFile { get; set; }
+        public string ConnectionString { get; set; }
     }
 }

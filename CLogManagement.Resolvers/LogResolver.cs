@@ -1,8 +1,9 @@
 ﻿using CLogManagement.Abstractions.Resolvers;
 using CLogManagement.Configuration;
+using CLogManagement.Definitions.Common;
 using CLogManagement.Web.Models.Common;
 using CLogManagement.Web.Models.Common.DPFilter;
-using LiteDB;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,15 +26,16 @@ namespace CLogManagement.Resolvers
         {
             var fromDateTime = (DateTime)args[LogResolverArgKeys.FromDateTime];
             var toDateTime = (DateTime)args[LogResolverArgKeys.ToDateTime];
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-                var dpFilterManager = new DPFilterManager();
-                var query = collection
-                    .Query()
-                    .Where(x => x.DateTime >= fromDateTime && x.DateTime <= toDateTime);
-                return dpFilterManager.GetDataFilter(dPFilter, query);
-            }
+            var database = new MongoClient(Information.ConnectionString)
+                .GetDatabase(DatabaseDefinition.DatabaseName);
+            var collection = 
+                database
+                .GetCollection<LogRecordWebModel>(DatabaseDefinition.LogCollectionName);
+            var dpFilterManager = new DPFilterManager();
+            var query = collection
+                .AsQueryable()
+                .Where(x => x.DateTime >= fromDateTime && x.DateTime <= toDateTime);
+            return dpFilterManager.GetDataFilter(dPFilter, query);
         }
     }
 }

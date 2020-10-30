@@ -16,7 +16,7 @@ namespace CLogManagement.DependencyInjection
         {
             return new UnityContainer()
                     .RegisterInstance(new CfgInformation(
-                        ConfigurationManager.AppSettings["LiteDbPath"]))
+                        ConfigurationManager.AppSettings["ConnectionString"]))
                     .RegisterType<ILogResolver, LogResolver>()
                     .AddExtension(new Diagnostic());
            

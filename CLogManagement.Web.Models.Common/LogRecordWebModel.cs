@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 
 namespace CLogManagement.Web.Models.Common
 {
@@ -29,6 +30,7 @@ namespace CLogManagement.Web.Models.Common
             Message = message;
         }
 
+        public ObjectId Id { get; set; }
         public DateTime DateTime { get; set; }
         public string ServiceName { get; set; }
         public string SeverityType { get; set; }

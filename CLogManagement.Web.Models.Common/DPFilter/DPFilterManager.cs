@@ -1,20 +1,21 @@
-﻿using LiteDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using MongoDB.Driver.Linq;
+using System.Linq.Dynamic.Core;
 
 namespace CLogManagement.Web.Models.Common.DPFilter
 {
     public class DPFilterManager
     {
-        public DPFilterResult<T> GetDataFilter<T>(DPFilter filter, ILiteQueryable<T> data)
+        public DPFilterResult<T> GetDataFilter<T>(DPFilter filter, IQueryable<T> data)
         {
             var recordsTotal = 0;
             var recordsFiltered = 0;
 
             recordsTotal = data.Count();
-            recordsFiltered = data.Count();
+            recordsFiltered = recordsTotal;
             if (filter != null)
             {
                 if (filter.SearchFields != null)
@@ -27,8 +28,7 @@ namespace CLogManagement.Web.Models.Common.DPFilter
                         if (string.IsNullOrEmpty(propName) || string.IsNullOrEmpty(searchValue))
                             continue;
 
-                        var expression = BuildExpression<T>(propName, searchValue);
-                        data = data.Where(expression);
+                        data = data.Where(BuildExpression<T>(propName, searchValue));
                     }
                 }
                 if (filter.OrderFields != null)
@@ -47,15 +47,16 @@ namespace CLogManagement.Web.Models.Common.DPFilter
                     if (orderExpressions.Count > 0)
                         data = data.OrderBy(string.Join(", ", orderExpressions));
                 }
-                recordsFiltered = data.Count();
 
                 if (filter.Skip > 0)
-                    data = (ILiteQueryable<T>)data.Skip(filter.Skip);
+                    data = data.Skip(filter.Skip);
 
                 if (filter.Take > 0)
-                    data = (ILiteQueryable<T>)data.Limit(filter.Take);
+                    data = data.Take(filter.Take);
+
+                recordsFiltered = data.Count();
             }
-            return new DPFilterResult<T>
+            return new DPFilterResult<T>()
             {
                 RecordsTotal = recordsTotal,
                 RecordsFiltered = recordsFiltered,
@@ -79,14 +80,15 @@ namespace CLogManagement.Web.Models.Common.DPFilter
                 return prop != null ? prop.GetValue(src, null) : null;
             }
         }
+        
         protected  Expression<Func<TEntity, bool>> BuildExpression<TEntity>(string propertyName, string pattern)
         {
             ParameterExpression parameters = Expression.Parameter(typeof(TEntity), "x");
             Expression property = Expression.PropertyOrField(parameters, propertyName);
             Expression ne = Expression.NotEqual(property, Expression.Constant(null));
 
-            Expression toString = Expression.Call(property, "ToString", null);
-            Expression toLower = Expression.Call(toString, "ToLower", null);
+            //Expression toString = Expression.Call(property, "ToString", null);
+            Expression toLower = Expression.Call(property, "ToLower", null);
             Expression Contains = Expression.Call(toLower, "Contains", null, Expression.Constant(pattern));
 
             Expression and = Expression.AndAlso(ne, Contains);

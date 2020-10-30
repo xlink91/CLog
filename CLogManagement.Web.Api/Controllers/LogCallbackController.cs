@@ -1,6 +1,7 @@
 ﻿using CLogManagement.Configuration;
+using CLogManagement.Definitions.Common;
 using CLogManagement.Web.Models.Common;
-using LiteDB;
+using MongoDB.Driver;
 using System;
 using System.Web.Http;
 
@@ -10,10 +11,16 @@ namespace CLogManagement.Web.Api.Controllers
     public class LogCallbackController : ApiController
     {
         protected CfgInformation Information { get; set; }
+        protected Lazy<IMongoDatabase> MongoDatabase { get; set; }
 
         public LogCallbackController(CfgInformation information)
         {
             Information = information;
+            MongoDatabase = new Lazy<IMongoDatabase>(() =>
+            {
+                IMongoClient mongoClient = new MongoClient(information.ConnectionString);
+                return mongoClient.GetDatabase(DatabaseDefinition.DatabaseName);
+            });
         }
 
         [Route("initializerWin")]
@@ -21,13 +28,7 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToInitializerWinLog(LogRecordWebModel request)
        {
             request.ServiceName = "InitializerWin";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -36,13 +37,7 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToInitializerWebLog(LogRecordWebModel request)
         {
             request.ServiceName = "InitializerWeb";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -51,13 +46,7 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToTMLog(LogRecordWebModel request)
         {
             request.ServiceName = "TMS";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -66,13 +55,7 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToTMApiLog(LogRecordWebModel request)
         {
             request.ServiceName = "TMSApi";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -81,27 +64,16 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToInternalCheckWebLog(LogRecordWebModel request)
         {
             request.ServiceName = "InternalCheckWeb";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
+
         [Route("internalcheckWin")]
         [HttpPost]
         public IHttpActionResult WriteToInternalCheckWinLog(LogRecordWebModel request)
         {
             request.ServiceName = "InternalCheckWin";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -110,27 +82,16 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToDistributionWinLog(LogRecordWebModel request)
         {
             request.ServiceName = "DistributionWin";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
+
         [Route("distributionWeb")]
         [HttpPost]
         public IHttpActionResult WriteToDistributionWebLog(LogRecordWebModel request)
         {
             request.ServiceName = "DistributionWeb";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -139,13 +100,7 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToCTIMLog(LogRecordWebModel request)
         {
             request.ServiceName = "CTIM";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
         }
 
@@ -154,14 +109,21 @@ namespace CLogManagement.Web.Api.Controllers
         public IHttpActionResult WriteToCTEMLog(LogRecordWebModel request)
         {
             request.ServiceName = "CTEM";
-            using (var database = new LiteDatabase(Information.DatabaseFile))
-            {
-                var collection = database.GetCollection<LogRecordWebModel>("Logs");
-
-                collection.Insert(request);
-            }
-
+            WriteRecord(request);
             return Ok();
+        }
+
+        protected void WriteRecord(LogRecordWebModel record)
+        {
+            var collection =
+                MongoDatabase
+                .Value
+                .GetCollection<LogRecordWebModel>(DatabaseDefinition.LogCollectionName);
+            collection.InsertOne(record);
+        }
+
+        ~LogCallbackController()
+        {
         }
     }
 }

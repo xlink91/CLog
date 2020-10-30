@@ -16,7 +16,7 @@ var dateUtil = {
         }
 
         if (timeAsString == null || timeAsString === "") {
-            timeAsString = "00:00:00";
+            timeAsString = "23:59:59";
         }
 
         var splittedDate = dateAsString.split("/");
@@ -116,8 +116,7 @@ var logsReport = {
                                     let s = dateAsString.substr(6, dateAsString.length - 8);
                                     let ml = Number(s);
                                     let date = new Date(ml);
-                                    console.log(date);
-                                    json.data[idx].Date =
+                                    json.data[idx].DateTime =
                                         date.getUTCDate().toString().padStart(2, "0") + "/" +
                                         (date.getMonth() + 1).toString().padStart(2, "0") + "/" +
                                         date.getFullYear() + " " +
@@ -131,7 +130,7 @@ var logsReport = {
                         "columns": [
                         {
                             "title": 'Date',
-                            "data": "Date",
+                            "data": "DateTime",
                             "sortable": true,
                             "width": "20%"
                         },

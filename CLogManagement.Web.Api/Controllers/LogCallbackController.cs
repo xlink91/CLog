@@ -113,6 +113,16 @@ namespace CLogManagement.Web.Api.Controllers
             return Ok();
         }
 
+        [Route("distributionftpservice")]
+        [HttpPost]
+        public IHttpActionResult WriteToFTPServiceLog(LogRecordWebModel request)
+        {
+            request.ServiceName = "Distribution FTP Service";
+            WriteRecord(request);
+            return Ok();
+        }
+
+
         protected void WriteRecord(LogRecordWebModel record)
         {
             var collection =

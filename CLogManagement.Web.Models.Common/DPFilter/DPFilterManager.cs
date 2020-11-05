@@ -48,13 +48,13 @@ namespace CLogManagement.Web.Models.Common.DPFilter
                         data = data.OrderBy(string.Join(", ", orderExpressions));
                 }
 
+                recordsFiltered = data.Count();
+
                 if (filter.Skip > 0)
                     data = data.Skip(filter.Skip);
 
                 if (filter.Take > 0)
                     data = data.Take(filter.Take);
-
-                recordsFiltered = data.Count();
             }
             return new DPFilterResult<T>()
             {

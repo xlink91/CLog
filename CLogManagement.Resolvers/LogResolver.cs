@@ -7,8 +7,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CLogManagement.Resolvers
 {
@@ -27,7 +25,7 @@ namespace CLogManagement.Resolvers
             var fromDateTime = (DateTime)args[LogResolverArgKeys.FromDateTime];
             var toDateTime = (DateTime)args[LogResolverArgKeys.ToDateTime];
             var database = new MongoClient(Information.ConnectionString)
-                .GetDatabase(DatabaseDefinition.DatabaseName);
+                .GetDatabase(Information.DatabaseName);
             var collection = 
                 database
                 .GetCollection<LogRecordWebModel>(DatabaseDefinition.LogCollectionName);

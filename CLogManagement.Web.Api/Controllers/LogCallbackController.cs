@@ -18,8 +18,8 @@ namespace CLogManagement.Web.Api.Controllers
             Information = information;
             MongoDatabase = new Lazy<IMongoDatabase>(() =>
             {
-                IMongoClient mongoClient = new MongoClient(information.ConnectionString);
-                return mongoClient.GetDatabase(DatabaseDefinition.DatabaseName);
+                IMongoClient mongoClient = new MongoClient(Information.ConnectionString);
+                return mongoClient.GetDatabase(Information.DatabaseName);
             });
         }
 

@@ -5,13 +5,9 @@ var dateUtil = {
     getDate: function (dateAsString, timeAsString, setDateToNow = false) {
         if (dateAsString == null || dateAsString === "") {
             if (setDateToNow) {
-                let now = new Date(Date.now());
-                let mm = now.getMonth() + 1;
-                let dd = now.getUTCDate();
-                let yyyy = now.getUTCFullYear();
-                dateAsString = mm.toString() + "/" + dd.toString() + "/" + yyyy.toString();
+                return new Date();
             } else {
-                dateAsString = "01/01/2020";
+                dateAsString = "01/01/1991";
             }
         }
 
